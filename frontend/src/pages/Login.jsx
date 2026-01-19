@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -59,6 +59,33 @@ const Login = () => {
         }
 
     }
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token"); // token from Google login
+
+        if (token) {
+            // Save token in localStorage
+            localStorage.setItem("accessToken", token);
+
+            // Fetch user info from backend
+            axios.get(`${import.meta.env.VITE_AUTHVAULT_BACKEND_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(res => {
+                    if (res.data.success) {
+                        setUser(res.data.user);      
+                        toast.success("Logged in with Google!");
+                        navigate("/");                 // Redirect to Home page
+                    }
+                })
+                .catch(err => {
+                    console.error("Google login failed:", err);
+                    toast.error("Google login failed!");
+                    navigate("/login");               // fallback to login page
+                });
+        }
+    }, []);
     return (
         <div className="min-h-screen bg-white flex flex-col">
 

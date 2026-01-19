@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 app.use(cors({
-    origin:'https://authvault-frontend.onrender.com',
+    origin:process.env.CLIENT_URL,
     credentials:true
 }))
 
