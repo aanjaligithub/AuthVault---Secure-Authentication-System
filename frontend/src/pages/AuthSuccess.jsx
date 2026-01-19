@@ -32,7 +32,7 @@ const AuthSuccess = () => {
             }
         }
         handleAuth()
-    }, [navigate])
+    }, [navigate, setUser])
     return (
         <h2>
             Logging in...
