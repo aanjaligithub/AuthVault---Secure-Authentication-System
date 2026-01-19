@@ -19,10 +19,19 @@ export const registerUser = async (req, res) => {
         //Check the user existing
         const existingUser = await User.findOne({ email })
         if (existingUser) {
+            // If user registered via Google
+            if (existingUser.googleId) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "This email is registered using Google. Please login with Google.",
+                });
+            }
+
             return res.status(400).json({
                 success: false,
-                message: "User already exists"
-            })
+                message: "User already exists. Please login.",
+            });
         }
         //Stored password in string format
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -290,8 +299,8 @@ export const changePassword = async (req, res) => {
         })
     }
     try {
-        const user = await User.findOne({email})
-        if(!user){
+        const user = await User.findOne({ email })
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found"
@@ -310,5 +319,5 @@ export const changePassword = async (req, res) => {
             success: false,
             message: "Internal server error"
         })
-    }    
+    }
 }
