@@ -13,11 +13,13 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(cors({
     origin: [
-        process.env.CLIENT_URL, 
+        process.env.CLIENT_URL,
         "http://localhost:5173"
     ],
-    credentials:true,
-}))
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 console.log("CORS allowed origin:", process.env.CLIENT_URL)
 
