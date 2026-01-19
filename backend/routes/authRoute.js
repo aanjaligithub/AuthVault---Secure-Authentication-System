@@ -2,6 +2,7 @@ import express from "express"
 import passport from "passport"
 import jwt from "jsonwebtoken"
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
+import 'dotenv/config';
 
 const router = express.Router();
 
