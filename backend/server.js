@@ -21,8 +21,6 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-console.log("CORS allowed origin:", process.env.CLIENT_URL)
-
 app.use('/auth', authRoute)
 app.use('/user', userRoute)
 

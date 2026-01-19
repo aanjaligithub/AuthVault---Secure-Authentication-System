@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 const Navbar = () => {
     const { user, setUser } = getData()
     const accessToken = localStorage.getItem("accessToken")
-    console.log(user);
 
     const logoutHandler = async () => {
         try {

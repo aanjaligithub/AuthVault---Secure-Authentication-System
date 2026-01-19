@@ -10,9 +10,7 @@ const AuthSuccess = () => {
 
         const handleAuth = async () => {
             const params = new URLSearchParams(window.location.search)
-            console.log(params);
             const accessToken = params.get("token")
-            console.log("Token", accessToken);
 
             if (accessToken) {
                 localStorage.setItem("accessToken", accessToken)
@@ -27,7 +25,14 @@ const AuthSuccess = () => {
                         navigate("/")
                     }
                 } catch (error) {
-                    console.error("Error fetching user:", error)
+                    const message =
+                        error.response?.data?.message ||
+                        "Google login failed. Please try again."
+
+                    alert(message)
+
+                    localStorage.removeItem("accessToken")
+                    navigate("/login")
                 }
             }
         }

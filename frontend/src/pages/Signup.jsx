@@ -38,7 +38,11 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(formData);
+
+        if (!formData.username || !formData.email || !formData.password) {
+            toast.error("All fields are required")
+            return
+        }
         try {
             setIsLoading(true)
             const res = await axios.post(`${import.meta.env.VITE_AUTHVAULT_BACKEND_URL}/user/register`, formData, {
@@ -51,7 +55,10 @@ const Signup = () => {
                 toast.success(res.data.message)
             }
         } catch (error) {
-            console.log(error);
+            const message =
+                error.response?.data?.message || "SignUp failed. Please try again."
+
+            toast.error(message)
 
         } finally {
             setIsLoading(false)

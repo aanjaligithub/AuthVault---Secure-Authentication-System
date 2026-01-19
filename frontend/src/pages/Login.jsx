@@ -16,6 +16,7 @@ import axios from 'axios'
 import { getData } from '@/context/userContext'
 import Google from "../assets/googleLogo.png"
 import { ShieldUser } from "lucide-react"
+import { useLocation } from "react-router-dom"
 
 const Login = () => {
     const { setUser } = getData()
@@ -26,6 +27,7 @@ const Login = () => {
         email: "",
         password: ""
     })
+    const location = useLocation()
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,7 +39,6 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(formData);
         try {
             setIsLoading(true)
             const res = await axios.post(`${import.meta.env.VITE_AUTHVAULT_BACKEND_URL}/user/login`, formData, {
@@ -52,40 +53,25 @@ const Login = () => {
                 toast.success(res.data.message)
             }
         } catch (error) {
-            console.log(error);
+            const message =
+                error.response?.data?.message || "Login failed. Please try again."
+
+            toast.error(message)
 
         } finally {
             setIsLoading(false)
         }
 
     }
-
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token"); // token from Google login
+        const params = new URLSearchParams(location.search)
+        const error = params.get("error")
 
-        if (token) {
-            // Save token in localStorage
-            localStorage.setItem("accessToken", token);
-
-            // Fetch user info from backend
-            axios.get(`${import.meta.env.VITE_AUTHVAULT_BACKEND_URL}/auth/me`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(res => {
-                    if (res.data.success) {
-                        setUser(res.data.user);      
-                        toast.success("Logged in with Google!");
-                        navigate("/");                 // Redirect to Home page
-                    }
-                })
-                .catch(err => {
-                    console.error("Google login failed:", err);
-                    toast.error("Google login failed!");
-                    navigate("/login");               // fallback to login page
-                });
+        if (error) {
+            toast.error(decodeURIComponent(error))
         }
-    }, []);
+    }, [location])
+
     return (
         <div className="min-h-screen bg-white flex flex-col">
 
