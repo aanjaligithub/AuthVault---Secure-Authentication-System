@@ -8,23 +8,22 @@ import { sendOtpMail } from '../emailVerify/sendOtpMail.js';
 
 export const registerUser = async (req, res) => {
     try {
-        //Get the data using req.body
         const { username, email, password } = req.body;
+
         if (!username || !email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "All fields are required"
-            })
+                message: "All fields are required",
+            });
         }
-        //Check the user existing
-        const existingUser = await User.findOne({ email })
+
+        const existingUser = await User.findOne({ email });
+
         if (existingUser) {
-            // If user registered via Google
             if (existingUser.googleId) {
                 return res.status(400).json({
                     success: false,
-                    message:
-                        "This email is registered using Google. Please login with Google.",
+                    message: "This email is registered using Google. Please login with Google.",
                 });
             }
 
@@ -33,35 +32,40 @@ export const registerUser = async (req, res) => {
                 message: "User already exists. Please login.",
             });
         }
-        //Stored password in string format
-        const hashedPassword = await bcrypt.hash(password, 10)
-        //Create new user
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = await User.create({
             username,
             email,
-            password: hashedPassword
-        })
-        //Create a token of new user for futher verification process
-        const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, { expiresIn: "10m" })
-        //parameter used for verification
-        verifyMail(token, email)
+            password: hashedPassword,
+            isVerified: false,
+        });
 
-        newUser.token = token
-        await newUser.save() //save new user 
+        const token = jwt.sign(
+            { id: newUser._id },
+            process.env.SECRET_KEY,
+            { expiresIn: "10m" }
+        );
+
+        newUser.token = token;
+        await newUser.save();
+
+        await verifyMail(token, email);
 
         return res.status(201).json({
             success: true,
-            message: "User registerd successfully",
-            data: newUser
-        })
-
+            message: "Registration successful. Please verify your email.",
+        });
     } catch (error) {
+        console.error("Register error:", error);
         return res.status(500).json({
             success: false,
-            message: error.message
-        })
+            message: "Internal server error",
+        });
     }
-}
+};
+
 
 export const verification = async (req, res) => {
     try {
