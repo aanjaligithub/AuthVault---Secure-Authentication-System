@@ -165,7 +165,7 @@ const Login = () => {
                         </Button>
 
                         <Button
-                            onClick={() => window.open("http://localhost:8000/auth/google", "_self")}
+                            onClick={() => window.open(`${import.meta.env.VITE_AUTHVAULT_BACKEND_URL}/auth/google`, "_self")}
                             className="w-full flex items-center justify-center gap-2 border border-blue-500 rounded-full h-12 hover:bg-blue-50"
                             variant="outline"
                         >
